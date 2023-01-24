@@ -1,22 +1,2 @@
-{
-    "id":15,
-    "allowed": [
-        "001112234556788889abccddddfffffs",
-        "0123334567889999abbcddddeeeefffs",
-        "001223444455666788999bbbbcceeffs",
-        "11122334444556667799aabbbbdeeffs",
-        "00111111334477999abbccdddeeeeffs",
-        "023344456789999999aaaabcccddeefs",
-        "02334444555556789999bbdddeeeeefs",
-        "001123444555788899aabbbeeeeeeffs",
-        "001134555666678889aacccddddeeefs",
-        "0112244444566699999aaabbbcdddees",
-        "111222234555566789bbbbcddeeffffs",
-        "02334444555556789999bbdddeeeeefs",
-        "01222344445556677889abbbddeffffs",
-        "11222234445667778899aaccceeeeees",
-        "00111223445566677788888bbbccddes",
-        "0011122233444455677788aaabbdeefs",
-        "002222344444555577789aabbbdddees"
-    ]
+{"Hyperion (WI)": 1500000000,"Astrea (WI)": 1500000000,"Scylla (WI)": 1500000000,"valkyrie (WI)": 1500000000
 }
