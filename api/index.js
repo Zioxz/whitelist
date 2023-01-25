@@ -99,9 +99,6 @@ register("Step", () => {
             let slots = false;
             let items = nbt.tag?.ExtraAttributes?.gems?.unlocked_slots;
             let enchant = "";
-            if (actualItem.getNBT().toObject()["tag"]["ExtraAttributes"]["rarity_upgrades"] == 1) {
-                itemName = itemName + "+"
-            }
             for (let k = 0; k < reforges.length; k++) {
                 if (itemName.includes(reforges[k])) {
                     itemName = itemName.replace(reforges[k], "")
@@ -117,6 +114,12 @@ register("Step", () => {
             }
             if (itemName.includes("⚚")){
                 itemName = itemName.replace("⚚ ", "")
+            }
+            if (actualItem.getNBT().toObject()["tag"]["ExtraAttributes"]["rarity_upgrades"] == 1) {
+                itemName = itemName + "+"
+            }
+            if (JSON.stringify(Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.hot_potato_count) == 15) {
+                itemName = itemName + "Fuming"
             }
             let gettingNbt = Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.enchantments
             if (JSON.stringify(gettingNbt?.ultimate_soul_eater) == 5) {
@@ -137,8 +140,8 @@ register("Step", () => {
             if (JSON.stringify(gettingNbt?.ultimate_one_for_all) == 1) {
                 enchant = "OFA"
             }
-            if (JSON.stringify(Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.hot_potato_count) == 15) {
-                itemName = itemName + "fumings"
+            if (JSON.stringify(gettingNbt?.smite) == 7) {
+                enchant = "S7"
             }
             }
             if (pricemap.hasOwnProperty(itemName)) {
