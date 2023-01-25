@@ -77,13 +77,7 @@ register("Step", () => {
                 //    console.log(itemName + " has price : " + price)
             }
             if(ChatLib.removeFormatting(line)?.startsWith("Seller:")){
-                player = ChatLib.removeFormatting(line).replace("Seller: ", "")
-                player = player.replace("[VIP] ", "")
-                player = player.replace("[VIP+] ", "")
-                player = player.replace("[MVP] ", "")
-                player = player.replace("[MVP+] ", "")
-                player = player.replace("[MVP++] ", "")
-                player = player.replace("[YOUTUBE] ", "")
+                player = ChatLib.removeFormatting(line).replace("Seller: ", "").replace("[VIP] ", "").replace("[VIP+] ", "").replace("[MVP] ", "").replace("[MVP+] ", "").replace("[MVP++] ", "").replace("[YOUTUBE] ", "")
             }
             if (ChatLib.removeFormatting(line)?.startsWith("Ability: Wither Impact")) {
                 witherImpact = true;
@@ -138,7 +132,7 @@ register("Step", () => {
                 enchant = "UWV"
             }
             if (JSON.stringify(gettingNbt?.ultimate_swarm) == 5) {
-                enchant = "S5"
+                enchant = "SW5"
             }
             if (JSON.stringify(gettingNbt?.ultimate_one_for_all) == 1) {
                 enchant = "OFA"
@@ -146,30 +140,6 @@ register("Step", () => {
             if (JSON.stringify(Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.hot_potato_count) == 15) {
                 itemName = itemName + "fumings"
             }
-            if (items != undefined) {
-                if (itemName.includes("Shadow Fury") || itemName.includes("Storm's") || itemName.includes("Necron's") || itemName.includes("Goldor's") || itemName.includes("Maxor's") || itemName.includes("Crimson") || itemName.includes("Aurora") || itemName.includes("Fervor") || itemName.includes("Terror") || itemName.includes("Sorrow")) {
-                    if (items.length == 2) {
-                        slots = true;
-                    }
-                }
-                if (itemName.includes("Atomsplit Katana")) {
-                    if (items.length == 3) {
-                        slots = true;
-                    }
-                }
-                if (itemName.includes("Divan's")) {
-                    if (items.length == 5) {
-                        slots = true;
-                    }
-                }
-                if (slots == true && enchant == "") {
-                    itemName = itemName + " (Slots)"
-                }
-                if (enchant != "" && slots != true) {
-                    itemName = itemName + " (" + enchant + ")"
-                } else if (enchant != "" && slots == true) {
-                    itemName = itemName + " (" + enchant + ", Slots)"
-                }
             }
             if (pricemap.hasOwnProperty(itemName)) {
                 for (let h=0; h<blacklist.length; h++){
