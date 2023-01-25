@@ -163,7 +163,7 @@ register("Step", () => {
                 }
             }
         }
-        }
+        
     }
 }).setFps(2)
 
