@@ -1,8 +1,8 @@
 const C0EPacketClickWindow = Java.type("net.minecraft.network.play.client.C0EPacketClickWindow")
 const sendWindowClick = (windowId, slot, clickType, actionNumber=0) => Client.sendPacket(new C0EPacketClickWindow(windowId ?? Player.getContainer().getWindowId(), slot, clickType ?? 0, 0, null, actionNumber))
 import request from "../requestV2"
-let minProfit = "3000000"
-let minProfitPercent = "10"
+let minProfit = "2000000"
+let minProfitPercent = "8"
 let jsonmap = FileLib.read(
   './config/ChatTriggers/modules/Pageflipper/pricemap.json'
 )
@@ -50,29 +50,30 @@ register('command', (...args) => {
     ChatLib.chat("[Elytra's Flipper] Minimum Profit set to "+arg[1])
   }
   if(arg[0] === "minProfitPercent"){
-    minProfitPercent = arg[1]
+    minProfitPercent = arg[1]+2
+    minProfitPercent = minProfitPercent/100
     chatLib.chat("[Elytra's Flipper] Minimum Profit Percent set to"+arg[1])
   }
-}).setName("ef");
+}).setName("pf");
 register('command', () => {
   pricemapping()
 }).setName("pricemap");
-let qualify = true;
 register("Step", () => {
     if (!testingtoggle) return;
     for (let i = 11; i <= 43; i++) {
         let player = "";
         if (null) return;
-        var price = 0;
+        var price;
         var actualItem = Player.getContainer().getItems()[i];
         if (actualItem == undefined || actualItem == null)
             continue;
         let itemName = actualItem?.getName().removeFormatting();
+        if (actualItem.getNBT().toObject()["tag"]["ExtraAttributes"]["rarity_upgrades"] == 1) {
+            itemName = itemName + "+"
+        }
         actualItem?.getLore()?.forEach(line => {
             if (ChatLib.removeFormatting(line)?.startsWith("Buy it now:")) {
-                hype = ChatLib.removeFormatting(line).replace("Buy it now: ", "");
-                price = hype.replaceAll(",", "");
-                price = price.replace(" coins", "");
+                price = ChatLib.removeFormatting(line).replace("Buy it now: ", "").replaceAll(",", "").replace(" coins", "");
                 price = parseInt(price);
                 //    console.log(itemName + " has price : " + price)
             }
@@ -81,19 +82,14 @@ register("Step", () => {
             }
             if (ChatLib.removeFormatting(line)?.startsWith("Ability: Wither Impact")) {
                 witherImpact = true;
-                itemName = itemName + "(WI)"
+                itemName = itemName + " (WI)"
             }
             if (ChatLib.removeFormatting(line)?.startsWith("Price paid: ")) {
                 paid = ChatLib.removeFormatting(line).replace("Price paid: ", "");
                 pricepaid = paid.replaceAll(",", "");
                 pricepaid = parseInt(pricepaid);
-                if (pricepaid > 100000000){
-                    itemName = itemName + "100M"
-                }
             }
         })
-        if (price == 0)
-            continue;
         if (actualItem.getNBT().toObject()["tag"]["ExtraAttributes"] != undefined) {
             var nbt = actualItem.getNBT().toObject();
             let slots = false;
@@ -115,119 +111,81 @@ register("Step", () => {
             if (itemName.includes("⚚")){
                 itemName = itemName.replace("⚚ ", "")
             }
-            if (actualItem.getNBT().toObject()["tag"]["ExtraAttributes"]["rarity_upgrades"] == 1) {
-                itemName = itemName + "+"
-            }
             if (JSON.stringify(Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.hot_potato_count) == 15) {
                 itemName = itemName + "Fuming"
             }
             let gettingNbt = Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.enchantments
             if (JSON.stringify(gettingNbt?.ultimate_soul_eater) == 5) {
                 enchant = "SE5"
+                if(soulEater.includes(itemName)){
+                    itemName = itemName + enchant
+                }
             }
+            /*
             if (JSON.stringify(gettingNbt?.ultimate_wisdom) == 5) {
                 enchant = "W5"
             }
             if (JSON.stringify(gettingNbt?.ultimate_legion) == 5) {
                 enchant = "L5"
             }
+            */
             if (JSON.stringify(gettingNbt?.ultimate_wise) == 5) {
                 enchant = "UWV"
+                if(ultimateWise.includes(itemName)){
+                    itemName = itemName + enchant
+                }
             }
             if (JSON.stringify(gettingNbt?.ultimate_swarm) == 5) {
                 enchant = "SW5"
+                if(swarm.includes(itemName)){
+                    itemName = itemName + enchant
+                }
             }
             if (JSON.stringify(gettingNbt?.ultimate_one_for_all) == 1) {
                 enchant = "OFA"
+                if(oneForAll.includes(itemName)){
+                    itemName = itemName + enchant
+                }
             }
             if (JSON.stringify(gettingNbt?.smite) == 7) {
                 enchant = "S7"
+                if(itemName.includes("Spirit Sceptre ✪✪✪✪✪+UW5")){
+                    itemName = itemName + enchant
+                }
             }
             }
             if (pricemap.hasOwnProperty(itemName)) {
-                for (let h=0; h<blacklist.length; h++){
-                    if(itemName === blacklist[h]){
-                        qualify = false;
-                    }
-                    else{
-                        qualify = true;
-                    }
-                }
-                if (qualify === true){
-                let tlaprice = (pricemap[itemName]);
-                var goodPrice = tlaprice * .90
-                if ((price < goodPrice && (tlaprice-price) >= 3000000) || (itemName.includes("+") && price <= 4000000))   {
-                    ChatLib.command("pc "+player, false);
-                    ChatLib.say("#"+player, true);
-                    console.log(itemName + "  has nice price :" + goodPrice + " tla price is " + tlaprice + " asking : " + price)
+                let cost = (pricemap[itemName]);
+                if ((cost-price >= minProfit && (cost/price)>=minProfitPercent)){
+                    ChatLib.command("pc "+player+" listed "+itemName+" for "+price+" is worth "+cost, false);
+                    console.log(player+" listed "+itemName+" for "+price+" is worth "+cost);
                     // Player.getContainer().click(i, false, "MIDDLE");
-                    let wi = Player.getContainer().getWindowId();
-                    sendWindowClick(wi, i, 0);
+                    //let wi = Player.getContainer().getWindowId();
+                    //sendWindowClick(wi, i, 0);
                 }
-            }
         }
         
     }
-}).setFps(2)
+    page();
+}).setFps(8)
 
-const BobStates = {
-    /*     Reset: 0, */
-    Bob: 1,
-    Builder: 2,
-}
-
-const AnaStates = {
-    Ana: 0,
-    Nano: 1,
-}
-
-let state1 = AnaStates.Ana
-let state = BobStates.Bob
-let bobcounter = 0
-let Anacounter = 0
-
-register("step", () => {
+function page() {
     if (testingtoggle === true) {
-        if (Player.getContainer().getName() === 'BIN Auction View' || Player.getContainer().getName() === 'Auction House' || Player.getContainer().getName() === ("Co-op Auction House") === true || Player.getContainer().getName() === 'Auctions Browser' || Player.getContainer().getName() === 'Auction House' || Player.getContainer().getName() === 'Auctions: "Hyperion"' || Player.getContainer().getName() === 'Confirm Purchase') {
-            if (Player.getContainer().getName() === ("Auction House") === true || Player.getContainer().getName() === ("Co-op Auction House") === true) {
+        inv = Player.getContainer()
+        invName = inv.getName()
+            if (invName === ("Auction House") === true || invName === ("Co-op Auction House") === true) {
                 Player.getContainer().click(11, false, "MIDDLE");
             }
-            if (Player.getContainer().getName() !== ("BIN Auction View")) {
-                if (Player.getContainer().getItems()[31]?.getID() === 355 || Player.getContainer().getItems()[31]?.getID() === 371 || Player.getContainer().getItems()[31]?.getID() === 159) { }
-                else {
-                    if (state == BobStates.Bob) {
-                        bobcounter++;
-                        let wi = Player.getContainer().getWindowId();
-                        sendWindowClick(wi, 53, 0)
-                        //Player.getContainer().click(53, false, "LEFT");
-                        if (bobcounter >=695 && bobcounter <=705) {
-                            state = BobStates.Builder;
-                            bobcounter = 0;
-                        }
-                    } else if (state == BobStates.Builder) {
-                        Player.getContainer().click(46, false, "RIGHT");
-                        state = BobStates.Bob;
-                    }
+            if (invName === 'Auctions Browser' || invName.includes("Auctions: ")){
+                if (inv.getItems()[53].getID() === 262){
+                    sendWindowClick(inv.getWindowId(), 53, 0)
+                }
+                else{
+                    sendWindowClick(inv.getWindowId(), 46, 2)
                 }
             }
-        }
-        else {
-            if (state1 == AnaStates.Ana) {
-                ChatLib.chat("§2Waiting to open ah");
-                Anacounter++;
-                if (Anacounter % 500 == 0) {
-                    state1 = AnaStates.Nano;
-                    Anacounter = 0;
-                }
-            } else if (state1 == AnaStates.Nano) {
-                ChatLib.chat("§3Opening ah");
-                ChatLib.command("ah", false);
-                state1 = AnaStates.Ana
-            }
-        }
-    }
-}).setFps(50)
-
+}
+}
 const masterStars = new Array('➊', '➋', '➌', '➍', '➎')
 
 
@@ -352,22 +310,53 @@ const reforges = new Array(
     "Pitchin' "
 )
 
-slotItems2 = new Array(
-    'Shadow Fury',
-    'Fervor',
-    'Aurora',
-    'Terror',
-    'Crimson',
-    "Goldor's",
-    "Maxor's",
-    "Necron's",
-    "Storm's"
+fumingItems = new Array(
+    'Livid Dagger+',
+    'Livid Dagger ✪✪✪✪✪+',
+    'Daedalus Axe+',
+    'Daedalus Axe+OFA',
+    'Daedalus Axe+SW5',
+    "Daedalus Axe+SE5",
+    "Shadow Fury ✪✪✪✪✪+",
 )
-slotItems3 = new Array(
-    'Atomsplit Katana',
-    'Sorrow',
+oneForAll = new Array(
+    'Atomsplit Katana+',
+    'Atomsplit Katana+Fuming',
+    'Livid Dagger ✪✪✪✪✪+',
+    'Livid Dagger ✪✪✪✪✪+Fuming',
+    'Flower of Truth ✪✪✪✪✪+',
+    'Daedalus Axe+',
+    'Daedalus Axe+Fuming',
+    'Shadow Fury ✪✪✪✪✪+',
+    'Shadow Fury ✪✪✪✪✪+Fuming',
+    'Axe of the Shredded ✪✪✪✪✪+',
+    "Giant's Sword+",
+    'Soul Whip ✪✪✪✪✪+'
 )
-slotItems5 = new Array(
-    "Divan's",
+soulEater = new Array(
+    'Livid Dagger ✪✪✪✪✪+',
+    'Livid Dagger ✪✪✪✪✪+Fuming',
+    'Flower of Truth ✪✪✪✪✪+',
+    'Daedalus Axe+',
+    'Daedalus Axe+Fuming',
+    'Shadow Fury ✪✪✪✪✪+',
+    'Shadow Fury ✪✪✪✪✪+Fuming',
+    "Giant's Sword+",
 )
-
+swarm = new Array(
+    'Atomsplit Katana+',
+    'Atomsplit Katana+Fuming',
+    'Livid Dagger ✪✪✪✪✪+',
+    'Livid Dagger ✪✪✪✪✪+Fuming',
+    'Flower of Truth ✪✪✪✪✪+',
+    'Daedalus Axe+',
+    'Daedalus Axe+Fuming',
+    'Shadow Fury ✪✪✪✪✪+',
+    'Shadow Fury ✪✪✪✪✪+Fuming',
+    'Soul Whip ✪✪✪✪✪+'
+)
+ultimateWise = new Array(
+    'Spirit Sceptre ✪✪✪✪✪+',
+    'Flower of Truth ✪✪✪✪✪+',
+    'Axe of the Shredded ✪✪✪✪✪+',
+)
