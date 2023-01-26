@@ -53,6 +53,7 @@ register('command', () => {
 }).setName("pricemap");
 register("Step", () => {
     if (!testingtoggle) return;
+    if (Player.getContainer().getName() === 'Auctions Browser' || Player.getContainer().getName().includes("Auctions: ")){
     for (let i = 11; i <= 43; i++) {
         let player = "";
         if (null) return;
@@ -60,10 +61,7 @@ register("Step", () => {
         var actualItem = Player.getContainer().getItems()[i];
         if (actualItem == undefined || actualItem == null)
             continue;
-        let itemName = actualItem?.getName().removeFormatting();
-        if (actualItem.getNBT().toObject()["tag"]["ExtraAttributes"]["rarity_upgrades"] == 1) {
-            itemName = itemName + "+"
-        }
+        let itemName = actualItem?.getName().removeFormatting()+"+";
         actualItem?.getLore()?.forEach(line => {
             if (ChatLib.removeFormatting(line)?.startsWith("Buy it now:")) {
                 price = ChatLib.removeFormatting(line).replace("Buy it now: ", "").replaceAll(",", "").replace(" coins", "");
@@ -159,26 +157,33 @@ register("Step", () => {
         }
         
     }
+}
     page();
 }).setFps(8)
 
 function page() {
+    inv = Player.getContainer()
+    invName = inv.getName()
+    if (invName === 'Auctions Browser' || invName.includes("Auctions: ")){
+        if (inv.getItems()[53]?.getID() === 262){
+            sendWindowClick(inv.getWindowId(), 53, 0)
+            }
+        if (inv.getItems()[53]?.getID() === 160){
+             sendWindowClick(inv.getWindowId(), 46, 1)
+            }
+            }
+
+}
+register("Step", () => {
     if (testingtoggle === true) {
-        inv = Player.getContainer()
-        invName = inv.getName()
-            if (invName === ("Auction House") === true || invName === ("Co-op Auction House") === true) {
-                Player.getContainer().click(11, false, "MIDDLE");
-            }
-            if (invName === 'Auctions Browser' || invName.includes("Auctions: ")){
-                if (inv.getItems()[53].getID() === 262){
-                    sendWindowClick(inv.getWindowId(), 53, 0)
-                }
-                else{
-                    sendWindowClick(inv.getWindowId(), 46, 2)
-                }
-            }
-}
-}
+        if (Player.getContainer().getName() === ("Auction House") || Player.getContainer().getName() === ("Co-op Auction House")) {
+            Player.getContainer().click(11, false, "MIDDLE");
+        }
+    if (!Player.getContainer() === null) return;
+        if (Player.getContainer().getName().includes("container")){
+            ChatLib.say("/ah");
+        }}
+}).setDelay(5)
 const masterStars = new Array('➊', '➋', '➌', '➍', '➎')
 
 
