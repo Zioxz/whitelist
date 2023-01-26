@@ -102,6 +102,12 @@ register("Step", () => {
             if (itemName.includes("⚚")){
                 itemName = itemName.replace("⚚ ", "")
             }
+            if (itemName.includes("Hyperion") || itemName.includes("Valkyrie") || itemName.includes("Scylla") || itemName.includes("Astrea")) {
+                if (itemName.includes("✪")) {
+                    itemName = itemName.replace(" ✪", "")
+                    itemName = itemName.replaceAll("✪", "")
+                    }
+                }
             if (JSON.stringify(Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.hot_potato_count) == 15) {
                 if (fumingItems.includes(itemName)){
                 itemName = itemName + "Fuming"
