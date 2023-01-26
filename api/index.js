@@ -103,7 +103,9 @@ register("Step", () => {
                 itemName = itemName.replace("⚚ ", "")
             }
             if (JSON.stringify(Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.hot_potato_count) == 15) {
+                if (fumingItems.includes(itemName)){
                 itemName = itemName + "Fuming"
+                }
             }
             let gettingNbt = Player.getContainer().getItems()[i].getNBT().toObject().tag?.ExtraAttributes?.enchantments
             if (JSON.stringify(gettingNbt?.ultimate_soul_eater) == 5) {
@@ -159,7 +161,7 @@ register("Step", () => {
     }
 }
     page();
-}).setFps(8)
+}).setFps(1)
 
 function page() {
     inv = Player.getContainer()
