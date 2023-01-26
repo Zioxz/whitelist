@@ -3,36 +3,23 @@ const sendWindowClick = (windowId, slot, clickType, actionNumber=0) => Client.se
 import request from "../requestV2"
 let minProfit = "2000000"
 let minProfitPercent = "8"
-let jsonmap = FileLib.read(
-  './config/ChatTriggers/modules/Pageflipper/pricemap.json'
-)
-let pricemap = (JSON.parse(jsonmap))
-let blacklist = ["Sorrow Chestplate (L5, Slots)"]
+let pricemap;
 function pricemapping() {
   var _0x393eee = {}
   _0x393eee['User-Agent'] = 'Mozilla/5.0 (ChatTriggers)'
   var _0x1fd50a = {
-      url: 'https://auctionsniper.tlanotyt.repl.co/',
+      url: 'https://raw.githubusercontent.com/Zioxz/whitelist/master/api/whitelist.json?token=GHSAT0AAAAAAB5ZYYNJ2EXR6PWIOFME3SY4Y6R3USQ',
       headers: _0x393eee,
       json: true,
   }
   request(_0x1fd50a)
       .then((_0xdc8c88) => {
-          FileLib.write(
-              './config/ChatTriggers/modules/Pageflipper/pricemap.json',
-              (JSON.stringify(_0xdc8c88)).replaceAll("âœªâœªâœªâœªâœª", "✪✪✪✪✪")
-          )
-          ChatLib.chat('&b[ef]&r Pricemap loaded!')
+        pricemap = JSON.stringify(_0xdc8c88)
+        ChatLib.chat('[ef]&r Pricemap loaded!')
       })
       .catch((_0x1e77e7) => {
           ChatLib.chat(
-              '&b[ef]&r Could not access pricemap! Using saved pricemap (proceed with caution, prices may be inaccurate)  ' +
-              _0x1e77e7
-          )
-          jsonmap = FileLib.read(
-              './config/ChatTriggers/modules/Pageflipper/pricemap.json'
-          )
-          pricemap = (JSON.parse(jsonmap))
+              '&b[ef]&r Could not access pricemap! Using saved pricemap (proceed with caution, prices may be inaccurate)  ' +_0x1e77e7)
       })
 }
 pricemapping()
@@ -43,7 +30,7 @@ let testingtoggle = false;
 register('command', () => {
     testingtoggle = !testingtoggle
     ChatLib.chat(`§3Testing ${testingtoggle ? "§aEnabled" : "§cDisabled"}§b.`);
-}).setName("testingtla");
+}).setName("page");
 register('command', (...args) => {
   if(arg[0] === "minProfit"){
     minProfit = arg[1].replace("k", "000").replace("m", "000000")
@@ -54,7 +41,7 @@ register('command', (...args) => {
     minProfitPercent = minProfitPercent/100
     chatLib.chat("[Elytra's Flipper] Minimum Profit Percent set to"+arg[1])
   }
-}).setName("pf");
+}).setName("page");
 register('command', () => {
   pricemapping()
 }).setName("pricemap");
